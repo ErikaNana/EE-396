@@ -1,7 +1,5 @@
 package com.example.drawing;
 
-import android.annotation.SuppressLint;
-import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -16,72 +14,86 @@ import android.view.View.OnTouchListener;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-
+import android.widget.TableLayout.LayoutParams;
 
 public class MainActivity extends Activity {
 	private DrawingView drawView;
 	private ImageButton currPaint;
 	private Button resetButton;
-	private Button newPatternButton;
+	private boolean drawDraw = true; //flag so only one dialog is shown at a time
+	private boolean firstTouch = true; //check if it user's first time drawing
+	private static final int START_POSITION_ERROR = 1;
+	private static final int OUT_OF_BOUNDS_ERROR = 2;
 	
+	private Button newPatternButton;
 	private final int NUMBEROFPATTERNS = 3;
 	private int patternCount = 0;
+	int counter = 0;
 	
-	@SuppressLint("NewApi")
 	@Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        
-        //get drawing view
-        LinearLayout layout = (LinearLayout) findViewById(R.id.drawing);
-        //set the listener on view
-        drawView = new DrawingView(this);
-        drawView.setOnTouchListener(new OnTouchListener() {
-                int counter = 0;
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                        float touchX = event.getX();
-                        float touchY = event.getY();
-                        int xCoord = (int) Math.floor(touchX);
-                        int yCoord = (int) Math.floor(touchY);
-                        DrawingView drawing = (DrawingView)v;
-                        switch (event.getAction()) {
-                                case MotionEvent.ACTION_DOWN:
-/*                                                int color = Utils.findColor(drawing, xCoord, yCoord);
-                                        Log.w("DW", "color:  " + color);*/
-                                        drawing.draw(DrawingView.DOWN, touchX, touchY);
-                                        int color2 = Utils.findColor(drawing, xCoord, yCoord);
-                                        Log.w("DW", "color:  " + color2);
-                                        break;
-                                
-                                case MotionEvent.ACTION_MOVE:
-                                        drawing.draw(DrawingView.MOVE, touchX, touchY);
-                                        int color = Utils.findColor(drawing, xCoord, yCoord);
-                                        if (color == -1) {
-                                                counter++;
-                                        }
-                                        if (counter == 10) {
-                                                showErrorDialog();
-                                                counter = 0;
-                                        }
-                                        Log.w("DW", "color:  " + color);
-                                        break;
-                                case MotionEvent.ACTION_UP:;
-                                        drawing.draw(DrawingView.UP, touchX, touchY);
-                                default:
-                                        return false;
-                        }
-                        return true;
-                }
-        });
-
-        drawView.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT));
-        
-		//drawView.setBackground(getResources().getDrawable(R.drawable.bg));
-		drawView.setBackground(getResources().getDrawable(R.drawable.pattern0));
-        layout.addView(drawView);
-        
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
+		
+		//get drawing view
+		LinearLayout layout = (LinearLayout) findViewById(R.id.drawing);
+		//set the listener on view
+		drawView = new DrawingView(this);
+		drawView.setOnTouchListener(new OnTouchListener() {
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				float touchX = event.getX();
+				float touchY = event.getY();
+				int xCoord = (int) Math.floor(touchX);
+				int yCoord = (int) Math.floor(touchY);
+				DrawingView drawing = (DrawingView)v;
+				switch (event.getAction()) {
+					case MotionEvent.ACTION_DOWN:
+/*						int color = Utils.findColor(drawing, xCoord, yCoord);
+						Log.w("DW", "color:  " + color);*/
+						drawing.draw(DrawingView.DOWN, touchX, touchY);
+						int color2 = Utils.findColor(drawing, xCoord, yCoord);
+						//check if just starting
+						Log.w("DW", "color:  " + color2);
+						break;
+					
+					case MotionEvent.ACTION_MOVE:
+						drawing.draw(DrawingView.MOVE, touchX, touchY);
+						int color = Utils.findColor(drawing, xCoord, yCoord);
+						if (firstTouch) {
+							if (color != -65536 && drawDraw) {
+								drawDraw = false;
+								showErrorDialog(START_POSITION_ERROR);
+							}
+							else {
+								firstTouch = false;
+							}
+						}
+						if (color == -1 && drawDraw) {
+							counter++;
+						}
+						if (!drawDraw) {
+							break;
+						}
+						if (counter >= 10 && drawDraw) {
+							drawDraw = false;
+							showErrorDialog(OUT_OF_BOUNDS_ERROR);
+						}
+						Log.w("DW", "color:  " + color);
+						break;
+					case MotionEvent.ACTION_UP:;
+						drawing.draw(DrawingView.UP, touchX, touchY);
+					default:
+						return false;
+				}
+				return true;
+			}
+		});
+		
+		drawView.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT));
+		//drawView.setImageDrawable(getResources().getDrawable(R.drawable.bg));
+		drawView.setBackground(getResources().getDrawable(R.drawable.background2));
+		layout.addView(drawView);
 		//get the palette
 		LinearLayout paintLayout = (LinearLayout) findViewById(R.id.paint_colors);
 		currPaint = (ImageButton)paintLayout.getChildAt(0);
@@ -104,21 +116,6 @@ public class MainActivity extends Activity {
 		}
 	}
 
-	
-    public void addNewPatternButton(){     
-        newPatternButton = (Button) findViewById(R.id.new_pattern_button);
-        newPatternButton.setOnClickListener(new OnClickListener() {
-                @Override
-        		public void onClick(View v){
-                		Log.w("hello", "SWITCH" + patternCount);
-                        patternCount = (patternCount + 1) % NUMBEROFPATTERNS;        // imagecount++; if hit last image go back to zero
-                        togglePattern();
-                        
-                }
-        });
-	}	
-	
-
 	public void addResetButton() {
 		resetButton = (Button) findViewById(R.id.reset_btn);
 		resetButton.setOnClickListener(new OnClickListener() {
@@ -136,26 +133,53 @@ public class MainActivity extends Activity {
 		return true;
 	}
 
-    @SuppressLint("InlinedApi")
-	public void showErrorDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_DARK)
-                                                                                                                        .setTitle(R.string.app_name);
-        builder.setMessage("Out of bounds!  Please try again");
-        builder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
-                
+	public void showErrorDialog(int type) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_DARK)
+		.setTitle(R.string.app_name);
+		if (type == OUT_OF_BOUNDS_ERROR) {
+			builder.setMessage("Out of bounds!  Please try again");
+			builder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+				
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					drawDraw = true;
+					firstTouch = true;
+					counter = 0;
+					drawView.clear();	
+				}
+			});
+		}
+		else {
+			builder.setMessage("Please start on the red dot");
+			builder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+				
+				public void onClick(DialogInterface dialog, int which) {
+					drawDraw = true;
+					counter = 0;
+					drawView.clear();
+					firstTouch = true;
+				}
+			});
+		}
+
+		AlertDialog dialog = builder.create();
+		dialog.setCanceledOnTouchOutside(false);
+		dialog.setCancelable(false);
+		dialog.show();
+	}
+    public void addNewPatternButton(){     
+        newPatternButton = (Button) findViewById(R.id.new_pattern_button);
+        newPatternButton.setOnClickListener(new OnClickListener() {
                 @Override
-                public void onClick(DialogInterface dialog, int which) {
-                        drawView.clear();        
+        		public void onClick(View v){
+                		Log.w("hello", "SWITCH" + patternCount);
+                        patternCount = (patternCount + 1) % NUMBEROFPATTERNS;        // imagecount++; if hit last image go back to zero
+                        togglePattern();
+                        
                 }
         });
-        AlertDialog dialog = builder.create();
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.setCancelable(false);
-        dialog.show();
-    }
-    
+	}	
 
-    @SuppressLint("NewApi")
 	private void togglePattern(){
 
         // DrawingView drawingView = (DrawingView) findViewById(R.id.drawing);
@@ -174,5 +198,6 @@ public class MainActivity extends Activity {
         }
         drawView.setBackground(newPattern);
         drawView.clear();
-    }	
+    }
 }
+
