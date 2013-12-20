@@ -120,13 +120,6 @@ public class MainActivity extends Activity {
 			currPaint = (ImageButton)view;
 		}
 	}
-
-/*	
-    public void addNewPatternButton(){
-        newPatternButton = (Button) findViewById(R.id.pattern_button);
-        newPatternButton.setOnClickListener(setToggleButtonClickListener()));
-}	
-*/
 	public void addResetButton() {
 		resetButton = (Button) findViewById(R.id.reset_btn);
 		resetButton.setOnClickListener(new OnClickListener() {
