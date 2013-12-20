@@ -79,6 +79,9 @@ public class Utils {
 	            }  
 	        }
 	      }
+	      if (pixelsNumber == 0) {
+	    	  return -1;
+	      }
 	      red = red / pixelsNumber;
 	      green = green / pixelsNumber;
 	      blue = blue / pixelsNumber;
