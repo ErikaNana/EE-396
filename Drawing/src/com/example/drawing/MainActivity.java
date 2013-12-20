@@ -3,8 +3,10 @@ package com.example.drawing;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -16,6 +18,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TableLayout.LayoutParams;
+import android.widget.Toast;
 
 public class MainActivity extends Activity {
 	private DrawingView drawView;
@@ -32,6 +35,11 @@ public class MainActivity extends Activity {
 	private Button newPatternButton;
 	private final int NUMBEROFPATTERNS = 3;
 	private int patternCount = 0;
+	
+	// accelerometer stuff
+	private SensorManager mSensorManager;
+	private ShakeEventListener mSensorListener;
+	
 	
 	@SuppressLint("NewApi")
 	@Override
@@ -73,17 +81,29 @@ public class MainActivity extends Activity {
 								firstTouch = false;
 							}
 						}
+						else if ((color != -16777216 &&	// black 
+								color != -16776961 && 	// black
+								color != -65536 && 		// red
+								color != -16776961) && drawDraw){	// blue
+							counter++;
+							
+						}
 						if (letGo == 1 && drawDraw) {
 							drawDraw = false;
 							showErrorDialog(ONE_STROKE_ERROR);
 						}
-						if (color == -16776961 && drawDraw) {
+						if ((color == -16776961 || 
+								color == -16776962) && 
+								drawDraw) {
 							drawDraw = false;
 							showErrorDialog(FINISHED);
 						}
-						if (color == -1 && drawDraw) {
+						// color: 855310 --> R: 242, G: 242, B: 242
+						/*
+						if ((color == -1 || color == -855310) && drawDraw) {
 							counter++;
 						}
+						*/
 						if (!drawDraw) {
 							break;
 						}
@@ -113,6 +133,17 @@ public class MainActivity extends Activity {
 		currPaint.setImageDrawable(getResources().getDrawable(R.drawable.paint_pressed));
 		addResetButton();
 		addNewPatternButton();
+		
+		// accelerometer stuff
+		mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+	    mSensorListener = new ShakeEventListener();   
+
+	    mSensorListener.setOnShakeListener(new ShakeEventListener.OnShakeListener() {
+
+	      public void onShake() {
+	    	  Log.w("shake", "very shake such wow");
+	      }
+	    });
 	}
 	
 	public void paintClicked(View view) {
@@ -257,7 +288,7 @@ public class MainActivity extends Activity {
 
         //else if (patternCount == 2)
         else {         
-                newPattern = getResources().getDrawable(R.drawable.background2);
+                newPattern = getResources().getDrawable(R.drawable.pattern2);
         }
         drawView.setBackground(newPattern);
         drawView.clear();
