@@ -24,11 +24,12 @@ public class MainActivity extends Activity {
 	private boolean firstTouch = true; //check if it user's first time drawing
 	private static final int START_POSITION_ERROR = 1;
 	private static final int OUT_OF_BOUNDS_ERROR = 2;
+	private static final int FINISHED = 3;
+	int counter = 0;
 	
 	private Button newPatternButton;
 	private final int NUMBEROFPATTERNS = 3;
 	private int patternCount = 0;
-	int counter = 0;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +69,10 @@ public class MainActivity extends Activity {
 							else {
 								firstTouch = false;
 							}
+						}
+						if (color == -16776961 && drawDraw) {
+							drawDraw = false;
+							showErrorDialog(FINISHED);
 						}
 						if (color == -1 && drawDraw) {
 							counter++;
@@ -116,6 +121,12 @@ public class MainActivity extends Activity {
 		}
 	}
 
+/*	
+    public void addNewPatternButton(){
+        newPatternButton = (Button) findViewById(R.id.pattern_button);
+        newPatternButton.setOnClickListener(setToggleButtonClickListener()));
+}	
+*/
 	public void addResetButton() {
 		resetButton = (Button) findViewById(R.id.reset_btn);
 		resetButton.setOnClickListener(new OnClickListener() {
@@ -136,32 +147,56 @@ public class MainActivity extends Activity {
 	public void showErrorDialog(int type) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_DARK)
 		.setTitle(R.string.app_name);
-		if (type == OUT_OF_BOUNDS_ERROR) {
-			builder.setMessage("Out of bounds!  Please try again");
-			builder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
-				
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					drawDraw = true;
-					firstTouch = true;
-					counter = 0;
-					drawView.clear();	
-				}
-			});
+		switch (type) {
+			case OUT_OF_BOUNDS_ERROR:{
+				builder.setMessage("Out of bounds!  Please try again");
+				builder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						drawDraw = true;
+						firstTouch = true;
+						counter = 0;
+						drawView.clear();	
+					}
+				});
+				break;
+			}
+			case START_POSITION_ERROR:{
+				builder.setMessage("Please start on the red dot");
+				builder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+					
+					public void onClick(DialogInterface dialog, int which) {
+						drawDraw = true;
+						counter = 0;
+						drawView.clear();
+						firstTouch = true;
+					}
+				});
+				break;	
+			}
+			case FINISHED:{
+				builder.setMessage("Good job you made it through! Start again?");
+				builder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						drawDraw = true;
+						counter = 0;
+						drawView.clear();
+						firstTouch = true;
+					}
+				});
+				builder.setNegativeButton("Quit", new DialogInterface.OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						finish();
+					}
+				});
+				break;
+			}
 		}
-		else {
-			builder.setMessage("Please start on the red dot");
-			builder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
-				
-				public void onClick(DialogInterface dialog, int which) {
-					drawDraw = true;
-					counter = 0;
-					drawView.clear();
-					firstTouch = true;
-				}
-			});
-		}
-
 		AlertDialog dialog = builder.create();
 		dialog.setCanceledOnTouchOutside(false);
 		dialog.setCancelable(false);
@@ -200,4 +235,3 @@ public class MainActivity extends Activity {
         drawView.clear();
     }
 }
-
