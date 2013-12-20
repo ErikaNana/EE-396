@@ -9,21 +9,21 @@ import android.graphics.drawable.Drawable;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TableLayout.LayoutParams;
-import android.widget.Toast;
 
 public class MainActivity extends Activity {
 	private DrawingView drawView;
 	private ImageButton currPaint;
-	private Button resetButton;
+	private ImageButton resetButton;
+	private ImageButton newPatternButton;
 	private boolean drawDraw = true; //flag so only one dialog is shown at a time
 	private boolean firstTouch = true; //check if it user's first time drawing
 	private static final int START_POSITION_ERROR = 1;
@@ -41,9 +41,8 @@ public class MainActivity extends Activity {
 	
 	int counter = 0;
 	int letGo = 0;
-	private Button newPatternButton;
 	private int patternCount = 0;
-	private int difficulty = 0;	// 0: easy, 1: med, 2: hard
+	int difficulty;	// 0: easy, 1: med, 2: hard
 	
 	// accelerometer stuff
 	private SensorManager mSensorManager;
@@ -55,11 +54,14 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		Bundle bundle = getIntent().getExtras();
+		difficulty = bundle.getInt("diff");
 		
 		//get drawing view
 		LinearLayout layout = (LinearLayout) findViewById(R.id.drawing);
 		//set the listener on view
 		drawView = new DrawingView(this);
+		
 		drawView.setOnTouchListener(new OnTouchListener() {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
@@ -150,6 +152,10 @@ public class MainActivity extends Activity {
 		addResetButton();
 		addNewPatternButton();
 		
+		
+		
+		
+		
 		// accelerometer stuff
 		mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 	    mSensorListener = new ShakeEventListener();   
@@ -176,12 +182,16 @@ public class MainActivity extends Activity {
 		}
 	}
 	public void addResetButton() {
-		resetButton = (Button) findViewById(R.id.reset_btn);
+		resetButton = (ImageButton) findViewById(R.id.reset_btn);
 		resetButton.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
 				drawView.clear();
+				drawDraw = true;
+				firstTouch = true;
+				counter = 0;
+				letGo = 0;
 			}
 		});
 	}
@@ -192,6 +202,46 @@ public class MainActivity extends Activity {
 		return true;
 	}
 
+	
+	// -------------------- back key stuff ---------------- 
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+	    if (keyCode == KeyEvent.KEYCODE_BACK) {
+	        exitByBackKey();
+
+	        //moveTaskToBack(false);
+
+	        return true;
+	    }
+	    return super.onKeyDown(keyCode, event);
+	}
+
+	protected void exitByBackKey() {
+
+	    AlertDialog alertbox = new AlertDialog.Builder(this)
+	    .setMessage("Do you want to return to title screen?")
+	    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+
+	        // do something when the button is clicked
+	        public void onClick(DialogInterface arg0, int arg1) {
+
+	            finish();
+	            //close();
+
+	        }
+	    })
+	    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+
+	        // do something when the button is clicked
+	        public void onClick(DialogInterface arg0, int arg1) {
+	                       }
+	    })
+	      .show();
+
+	}
+	
+	// -------------------- END OF back key stuff ---------------- 
+	
+	
 	@SuppressLint("InlinedApi")
 	public void showErrorDialog(int type) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_DARK)
@@ -239,11 +289,16 @@ public class MainActivity extends Activity {
 						letGo = 0;
 					}
 				});
-				builder.setNegativeButton("Quit", new DialogInterface.OnClickListener() {
-					
+				builder.setNegativeButton("New Pattern", new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						finish();
+						drawDraw = true;
+						counter = 0;
+						drawView.clear();
+						firstTouch = true;
+						letGo = 0;
+						patternCount = (patternCount + 1) % NUMBEROFPATTERNS;        // imagecount++; if hit last image go back to zero
+                        togglePattern();
 					}
 				});
 				break;
@@ -277,14 +332,17 @@ public class MainActivity extends Activity {
 		dialog.show();
 	}
     public void addNewPatternButton(){     
-        newPatternButton = (Button) findViewById(R.id.new_pattern_button);
+        newPatternButton = (ImageButton) findViewById(R.id.new_pattern_button);
         newPatternButton.setOnClickListener(new OnClickListener() {
                 @Override
         		public void onClick(View v){
                 		Log.w("hello", "SWITCH" + patternCount);
+                		drawDraw = true;
+						firstTouch = true;
+						counter = 0;
+						letGo = 0;
                         patternCount = (patternCount + 1) % NUMBEROFPATTERNS;        // imagecount++; if hit last image go back to zero
-                        togglePattern();
-                        
+                        togglePattern();                
                 }
         });
 	}	
@@ -365,23 +423,7 @@ public class MainActivity extends Activity {
 		        else newPattern = getResources().getDrawable(R.drawable.pattern6e);
         		break;
         }       	        		
-        		
-        		
-        		
-        /*		
-	        if(patternCount == 0){
-	                newPattern = getResources().getDrawable(R.drawable.pattern0);
-	        }
-	        else if(patternCount == 1){
-	                newPattern = getResources().getDrawable(R.drawable.background2);
-	        }
-	
-	        //else if (patternCount == 2)
-	        else {         
-	                newPattern = getResources().getDrawable(R.drawable.pattern2);
-	        }
-        */
-        
+        		    
         drawView.setBackground(newPattern);
         drawView.clear();
     }

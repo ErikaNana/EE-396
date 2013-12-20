@@ -13,7 +13,7 @@ import android.widget.ImageView;
 public class DrawingView extends ImageView {
 	private Path drawPath; //drawing path
 	private Paint drawPaint, canvasPaint; //drawing and canvas paint
-	private int paintColor = 0xFF660000; //initial color
+	private int paintColor = 0xFFFFCC00; //initial color
 	private Canvas drawCanvas; //canvas
 	private Bitmap canvasBitmap; //canvasBitmap
 	private int height;
