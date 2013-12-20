@@ -26,6 +26,10 @@ public class MainActivity extends Activity {
 	private static final int OUT_OF_BOUNDS_ERROR = 2;
 	private static final int FINISHED = 3;
 	private static final int ONE_STROKE_ERROR = 4;
+	private static final int WHITE = -1;
+	private static final int RED = -65536;
+	private static final int BLUE = -16776961;
+	
 	int counter = 0;
 	int letGo = 0;
 	private Button newPatternButton;
@@ -63,7 +67,7 @@ public class MainActivity extends Activity {
 						drawing.draw(DrawingView.MOVE, touchX, touchY);
 						int color = Utils.findColor(drawing, xCoord, yCoord);
 						if (firstTouch) {
-							if (color != -65536 && drawDraw) {
+							if (color != RED && drawDraw) {
 								drawDraw = false;
 								showErrorDialog(START_POSITION_ERROR);
 							}
@@ -75,11 +79,11 @@ public class MainActivity extends Activity {
 							drawDraw = false;
 							showErrorDialog(ONE_STROKE_ERROR);
 						}
-						if (color == -16776961 && drawDraw) {
+						if (color == BLUE && drawDraw) {
 							drawDraw = false;
 							showErrorDialog(FINISHED);
 						}
-						if (color == -1 && drawDraw) {
+						if (color == WHITE && drawDraw) {
 							counter++;
 						}
 						if (!drawDraw) {
