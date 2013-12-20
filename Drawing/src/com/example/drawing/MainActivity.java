@@ -1,5 +1,6 @@
 package com.example.drawing;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -32,6 +33,7 @@ public class MainActivity extends Activity {
 	private final int NUMBEROFPATTERNS = 3;
 	private int patternCount = 0;
 	
+	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -143,6 +145,7 @@ public class MainActivity extends Activity {
 		return true;
 	}
 
+	@SuppressLint("InlinedApi")
 	public void showErrorDialog(int type) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_DARK)
 		.setTitle(R.string.app_name);
@@ -239,6 +242,7 @@ public class MainActivity extends Activity {
         });
 	}	
 
+	@SuppressLint("NewApi")
 	private void togglePattern(){
 
         // DrawingView drawingView = (DrawingView) findViewById(R.id.drawing);
