@@ -25,8 +25,9 @@ public class MainActivity extends Activity {
 	private static final int START_POSITION_ERROR = 1;
 	private static final int OUT_OF_BOUNDS_ERROR = 2;
 	private static final int FINISHED = 3;
+	private static final int ONE_STROKE_ERROR = 4;
 	int counter = 0;
-	
+	int letGo = 0;
 	private Button newPatternButton;
 	private final int NUMBEROFPATTERNS = 3;
 	private int patternCount = 0;
@@ -70,6 +71,10 @@ public class MainActivity extends Activity {
 								firstTouch = false;
 							}
 						}
+						if (letGo == 1 && drawDraw) {
+							drawDraw = false;
+							showErrorDialog(ONE_STROKE_ERROR);
+						}
 						if (color == -16776961 && drawDraw) {
 							drawDraw = false;
 							showErrorDialog(FINISHED);
@@ -87,6 +92,7 @@ public class MainActivity extends Activity {
 						Log.w("DW", "color:  " + color);
 						break;
 					case MotionEvent.ACTION_UP:;
+						letGo = 1;
 						drawing.draw(DrawingView.UP, touchX, touchY);
 					default:
 						return false;
@@ -150,6 +156,7 @@ public class MainActivity extends Activity {
 						drawDraw = true;
 						firstTouch = true;
 						counter = 0;
+						letGo = 0;
 						drawView.clear();	
 					}
 				});
@@ -164,6 +171,7 @@ public class MainActivity extends Activity {
 						counter = 0;
 						drawView.clear();
 						firstTouch = true;
+						letGo = 0;
 					}
 				});
 				break;	
@@ -178,6 +186,29 @@ public class MainActivity extends Activity {
 						counter = 0;
 						drawView.clear();
 						firstTouch = true;
+						letGo = 0;
+					}
+				});
+				builder.setNegativeButton("Quit", new DialogInterface.OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						finish();
+					}
+				});
+				break;
+			}
+			case ONE_STROKE_ERROR:{
+				builder.setMessage("Sorry but you gotta do it one stroke! Try again?");
+				builder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						drawDraw = true;
+						counter = 0;
+						drawView.clear();
+						firstTouch = true;
+						letGo = 0;
 					}
 				});
 				builder.setNegativeButton("Quit", new DialogInterface.OnClickListener() {
