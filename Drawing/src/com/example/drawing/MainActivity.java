@@ -30,11 +30,20 @@ public class MainActivity extends Activity {
 	private static final int OUT_OF_BOUNDS_ERROR = 2;
 	private static final int FINISHED = 3;
 	private static final int ONE_STROKE_ERROR = 4;
+	private static final int NUMBEROFPATTERNS = 7;
+	private static final int COUNTER_COUNT = 5;		// how much error allowed
+	
+	// colors
+	private static final int RED = -65536;
+	// private static final int BLUE1 = -16776961;
+	private static final int BLUE = -16776961;
+	private static final int BLACK = -16777216;
+	
 	int counter = 0;
 	int letGo = 0;
 	private Button newPatternButton;
-	private final int NUMBEROFPATTERNS = 3;
 	private int patternCount = 0;
+	private int difficulty = 0;	// 0: easy, 1: med, 2: hard
 	
 	// accelerometer stuff
 	private SensorManager mSensorManager;
@@ -73,7 +82,7 @@ public class MainActivity extends Activity {
 						drawing.draw(DrawingView.MOVE, touchX, touchY);
 						int color = Utils.findColor(drawing, xCoord, yCoord);
 						if (firstTouch) {
-							if (color != -65536 && drawDraw) {
+							if (color != RED && drawDraw) {
 								drawDraw = false;
 								showErrorDialog(START_POSITION_ERROR);
 							}
@@ -81,20 +90,19 @@ public class MainActivity extends Activity {
 								firstTouch = false;
 							}
 						}
-						else if ((color != -16777216 &&	// black 
-								color != -16776961 && 	// black
-								color != -65536 && 		// red
-								color != -16776961) && drawDraw){	// blue
+						else if ((color != BLACK &&	
+								color != BLUE && 	
+								color != RED)	 
+								&& drawDraw){
 							counter++;
-							
 						}
+						
 						if (letGo == 1 && drawDraw) {
 							drawDraw = false;
 							showErrorDialog(ONE_STROKE_ERROR);
 						}
-						if ((color == -16776961 || 
-								color == -16776962) && 
-								drawDraw) {
+						
+						if (color == BLUE && drawDraw) {
 							drawDraw = false;
 							showErrorDialog(FINISHED);
 						}
@@ -107,7 +115,7 @@ public class MainActivity extends Activity {
 						if (!drawDraw) {
 							break;
 						}
-						if (counter >= 10 && drawDraw) {
+						if (counter >= COUNTER_COUNT && drawDraw) {
 							drawDraw = false;
 							showErrorDialog(OUT_OF_BOUNDS_ERROR);
 						}
@@ -125,7 +133,15 @@ public class MainActivity extends Activity {
 		
 		drawView.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT));
 		//drawView.setImageDrawable(getResources().getDrawable(R.drawable.bg));
-		drawView.setBackground(getResources().getDrawable(R.drawable.background2));
+		switch(difficulty){
+			case(1): drawView.setBackground(getResources().getDrawable(R.drawable.pattern0m));
+					 break;
+			case(2): drawView.setBackground(getResources().getDrawable(R.drawable.pattern0h));
+					 break;
+			default: drawView.setBackground(getResources().getDrawable(R.drawable.pattern0e));
+					 break;
+		}
+		
 		layout.addView(drawView);
 		//get the palette
 		LinearLayout paintLayout = (LinearLayout) findViewById(R.id.paint_colors);
@@ -278,18 +294,94 @@ public class MainActivity extends Activity {
 
         // DrawingView drawingView = (DrawingView) findViewById(R.id.drawing);
         Drawable newPattern;
+        switch(difficulty){
+        	case(1):	// medium
+        		if(patternCount == 0){
+	                newPattern = getResources().getDrawable(R.drawable.pattern0m);
+		        }
+		        else if(patternCount == 1){
+		                newPattern = getResources().getDrawable(R.drawable.pattern1m);
+		        }
+		
+		        //else if (patternCount == 2)
+		        else if(patternCount == 2){         
+		                newPattern = getResources().getDrawable(R.drawable.pattern2m);
+		        }
+		        else if(patternCount == 3){         
+	                newPattern = getResources().getDrawable(R.drawable.pattern3m);
+		        }
+		        else if(patternCount == 4){         
+	                newPattern = getResources().getDrawable(R.drawable.pattern4m);
+		        }
+		        else if(patternCount == 5){         
+	                newPattern = getResources().getDrawable(R.drawable.pattern5m);
+		        }
+		        else newPattern = getResources().getDrawable(R.drawable.pattern6m);
+        		break;
+        		
+        	case(2):	// hard
+        		if(patternCount == 0){
+	                newPattern = getResources().getDrawable(R.drawable.pattern0h);
+		        }
+		        else if(patternCount == 1){
+		                newPattern = getResources().getDrawable(R.drawable.pattern1h);
+		        }
+		
+		        else if(patternCount == 2){         
+		                newPattern = getResources().getDrawable(R.drawable.pattern2h);
+		        }
+		        else if(patternCount == 3){         
+	                newPattern = getResources().getDrawable(R.drawable.pattern3h);
+		        }
+		        else if(patternCount == 4){         
+	                newPattern = getResources().getDrawable(R.drawable.pattern4h);
+		        }
+		        else if(patternCount == 5){         
+	                newPattern = getResources().getDrawable(R.drawable.pattern5h);
+		        }
+		        else newPattern = getResources().getDrawable(R.drawable.pattern6h);
+        		break;
+        		
+        	default:	// easy
+        		if(patternCount == 0){
+	                newPattern = getResources().getDrawable(R.drawable.pattern0e);
+		        }
+		        else if(patternCount == 1){
+		                newPattern = getResources().getDrawable(R.drawable.pattern1e);
+		        }
+		
+		        else if(patternCount == 2){         
+		                newPattern = getResources().getDrawable(R.drawable.pattern2e);
+		        }
+		        else if(patternCount == 3){         
+	                newPattern = getResources().getDrawable(R.drawable.pattern3e);
+		        }
+		        else if(patternCount == 4){         
+	                newPattern = getResources().getDrawable(R.drawable.pattern4e);
+		        }
+		        else if(patternCount == 5){         
+	                newPattern = getResources().getDrawable(R.drawable.pattern5e);
+		        }
+		        else newPattern = getResources().getDrawable(R.drawable.pattern6e);
+        		break;
+        }       	        		
+        		
+        		
+        		
+        /*		
+	        if(patternCount == 0){
+	                newPattern = getResources().getDrawable(R.drawable.pattern0);
+	        }
+	        else if(patternCount == 1){
+	                newPattern = getResources().getDrawable(R.drawable.background2);
+	        }
+	
+	        //else if (patternCount == 2)
+	        else {         
+	                newPattern = getResources().getDrawable(R.drawable.pattern2);
+	        }
+        */
         
-        if(patternCount == 0){
-                newPattern = getResources().getDrawable(R.drawable.pattern0);
-        }
-        else if(patternCount == 1){
-                newPattern = getResources().getDrawable(R.drawable.background2);
-        }
-
-        //else if (patternCount == 2)
-        else {         
-                newPattern = getResources().getDrawable(R.drawable.pattern2);
-        }
         drawView.setBackground(newPattern);
         drawView.clear();
     }
