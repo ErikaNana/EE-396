@@ -10,4 +10,5 @@
 	<string name = "save">Save</string>
 	<string name = "paint">Paint</string>
 	<string name = "reset">Reset</string>
+	<string name = "new_pattern">New Pattern</string>
 </resources>
