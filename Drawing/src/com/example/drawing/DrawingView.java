@@ -26,6 +26,10 @@ public class DrawingView extends ImageView {
 		super(context,attrs);
 		setupDrawing();
 	}
+	public DrawingView(Context context) {
+		super(context);
+		setupDrawing();
+	}
 	private void setupDrawing() {
 	//get drawing setup for interaction
 	//these make drawings appear smoother

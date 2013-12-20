@@ -1,6 +1,8 @@
 package com.example.drawing;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -11,7 +13,7 @@ import android.view.View.OnTouchListener;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.Toast;
+import android.widget.TableLayout.LayoutParams;
 
 public class MainActivity extends Activity {
 	private DrawingView drawView;
@@ -23,8 +25,9 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 		
 		//get drawing view
-		drawView = (DrawingView) findViewById(R.id.drawing);
+		LinearLayout layout = (LinearLayout) findViewById(R.id.drawing);
 		//set the listener on view
+		drawView = new DrawingView(this);
 		drawView.setOnTouchListener(new OnTouchListener() {
 			int counter = 0;
 			@Override
@@ -49,11 +52,8 @@ public class MainActivity extends Activity {
 						if (color == -1) {
 							counter++;
 						}
-						else {
-							counter--;
-						}
-						if (counter == 20) {
-							Toast.makeText(getApplicationContext(), "Out of bounds!", Toast.LENGTH_SHORT).show();
+						if (counter == 10) {
+							showErrorDialog();
 							counter = 0;
 						}
 						Log.w("DW", "color:  " + color);
@@ -66,9 +66,11 @@ public class MainActivity extends Activity {
 				return true;
 			}
 		});
-		//drawView.setBackground(getResources().getDrawable(R.drawable.bg));
-		drawView.setImageDrawable(getResources().getDrawable(R.drawable.bg));
 		
+		drawView.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT));
+		//drawView.setImageDrawable(getResources().getDrawable(R.drawable.bg));
+		drawView.setBackground(getResources().getDrawable(R.drawable.bg));
+		layout.addView(drawView);
 		//get the palette
 		LinearLayout paintLayout = (LinearLayout) findViewById(R.id.paint_colors);
 		currPaint = (ImageButton)paintLayout.getChildAt(0);
@@ -113,6 +115,22 @@ public class MainActivity extends Activity {
 		return true;
 	}
 
+	public void showErrorDialog() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_DARK)
+																.setTitle(R.string.app_name);
+		builder.setMessage("Out of bounds!  Please try again");
+		builder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				drawView.clear();	
+			}
+		});
+		AlertDialog dialog = builder.create();
+		dialog.setCanceledOnTouchOutside(false);
+		dialog.setCancelable(false);
+		dialog.show();
+	}
 	
 
 	 	
