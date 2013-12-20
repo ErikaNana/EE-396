@@ -3,6 +3,7 @@ package com.example.drawing;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,6 +16,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TableLayout.LayoutParams;
+import android.widget.Toast;
 
 public class MainActivity extends Activity {
 	private DrawingView drawView;
@@ -40,7 +42,6 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		
 		//get drawing view
 		LinearLayout layout = (LinearLayout) findViewById(R.id.drawing);
 		//set the listener on view
