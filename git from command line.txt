@@ -1,0 +1,11 @@
+create repo on github and initialize with README
+
+create repo in base folder: git init
+adding files to repo: git add .
+	adds all the files from the current folder and sub-folders recursively to the git repo
+commit command and message: git commit -a -m "Initial commit"
+incorporate changes into repo: git pull --rebase origin master (pulls everything and then integrate with commit)
+set remote origin: git remote set-url origin <URL>
+pushing everything: git push origin master
+
+
