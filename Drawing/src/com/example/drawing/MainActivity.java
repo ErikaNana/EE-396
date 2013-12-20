@@ -19,6 +19,10 @@ public class MainActivity extends Activity {
 	private DrawingView drawView;
 	private ImageButton currPaint;
 	private Button resetButton;
+	private boolean drawDraw = true;
+	private boolean firstTouch = true;
+	int counter = 0;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -29,7 +33,6 @@ public class MainActivity extends Activity {
 		//set the listener on view
 		drawView = new DrawingView(this);
 		drawView.setOnTouchListener(new OnTouchListener() {
-			int counter = 0;
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				float touchX = event.getX();
@@ -43,18 +46,24 @@ public class MainActivity extends Activity {
 						Log.w("DW", "color:  " + color);*/
 						drawing.draw(DrawingView.DOWN, touchX, touchY);
 						int color2 = Utils.findColor(drawing, xCoord, yCoord);
+						//check if just starting
+						if (firstTouch) {
+						}
 						Log.w("DW", "color:  " + color2);
 						break;
 					
 					case MotionEvent.ACTION_MOVE:
 						drawing.draw(DrawingView.MOVE, touchX, touchY);
 						int color = Utils.findColor(drawing, xCoord, yCoord);
-						if (color == -1) {
+						if (color == -1 && drawDraw) {
 							counter++;
 						}
-						if (counter == 10) {
+						if (!drawDraw) {
+							break;
+						}
+						if (counter >= 10 && drawDraw) {
+							drawDraw = false;
 							showErrorDialog();
-							counter = 0;
 						}
 						Log.w("DW", "color:  " + color);
 						break;
@@ -69,7 +78,7 @@ public class MainActivity extends Activity {
 		
 		drawView.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT));
 		//drawView.setImageDrawable(getResources().getDrawable(R.drawable.bg));
-		drawView.setBackground(getResources().getDrawable(R.drawable.bg));
+		drawView.setBackground(getResources().getDrawable(R.drawable.background2));
 		layout.addView(drawView);
 		//get the palette
 		LinearLayout paintLayout = (LinearLayout) findViewById(R.id.paint_colors);
@@ -123,6 +132,8 @@ public class MainActivity extends Activity {
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
+				drawDraw = true;
+				counter = 0;
 				drawView.clear();	
 			}
 		});
