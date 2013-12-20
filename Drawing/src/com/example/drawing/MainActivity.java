@@ -19,8 +19,11 @@ public class MainActivity extends Activity {
 	private DrawingView drawView;
 	private ImageButton currPaint;
 	private Button resetButton;
-	private boolean drawDraw = true;
-	private boolean firstTouch = true;
+	private boolean drawDraw = true; //flag so only one dialog is shown at a time
+	private boolean firstTouch = true; //check if it user's first time drawing
+	private static final int START_POSITION_ERROR = 1;
+	private static final int OUT_OF_BOUNDS_ERROR = 2;
+	
 	int counter = 0;
 	
 	@Override
@@ -47,14 +50,21 @@ public class MainActivity extends Activity {
 						drawing.draw(DrawingView.DOWN, touchX, touchY);
 						int color2 = Utils.findColor(drawing, xCoord, yCoord);
 						//check if just starting
-						if (firstTouch) {
-						}
 						Log.w("DW", "color:  " + color2);
 						break;
 					
 					case MotionEvent.ACTION_MOVE:
 						drawing.draw(DrawingView.MOVE, touchX, touchY);
 						int color = Utils.findColor(drawing, xCoord, yCoord);
+						if (firstTouch) {
+							if (color != -65536 && drawDraw) {
+								drawDraw = false;
+								showErrorDialog(START_POSITION_ERROR);
+							}
+							else {
+								firstTouch = false;
+							}
+						}
 						if (color == -1 && drawDraw) {
 							counter++;
 						}
@@ -63,7 +73,7 @@ public class MainActivity extends Activity {
 						}
 						if (counter >= 10 && drawDraw) {
 							drawDraw = false;
-							showErrorDialog();
+							showErrorDialog(OUT_OF_BOUNDS_ERROR);
 						}
 						Log.w("DW", "color:  " + color);
 						break;
@@ -124,19 +134,36 @@ public class MainActivity extends Activity {
 		return true;
 	}
 
-	public void showErrorDialog() {
+	public void showErrorDialog(int type) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_DARK)
-																.setTitle(R.string.app_name);
-		builder.setMessage("Out of bounds!  Please try again");
-		builder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
-			
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				drawDraw = true;
-				counter = 0;
-				drawView.clear();	
-			}
-		});
+		.setTitle(R.string.app_name);
+		if (type == OUT_OF_BOUNDS_ERROR) {
+			builder.setMessage("Out of bounds!  Please try again");
+			builder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+				
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					drawDraw = true;
+					firstTouch = true;
+					counter = 0;
+					drawView.clear();	
+				}
+			});
+		}
+		else {
+			builder.setMessage("Please start on the red dot");
+			builder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+				
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					drawDraw = true;
+					counter = 0;
+					drawView.clear();
+					firstTouch = true;
+				}
+			});
+		}
+
 		AlertDialog dialog = builder.create();
 		dialog.setCanceledOnTouchOutside(false);
 		dialog.setCancelable(false);
