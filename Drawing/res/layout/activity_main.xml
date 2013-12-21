@@ -9,18 +9,18 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
+        android:layout_gravity="center_horizontal"
         android:orientation="horizontal">
         <ImageButton 
             android:id="@+id/new_pattern_button"
-            android:layout_width = "wrap_content"
+            android:layout_width = "425dip"
             android:layout_height = "fill_parent"
             android:contentDescription="@string/new_pattern"
             android:src="@drawable/newpattern"/>
       	<ImageButton 
       	    android:id = "@+id/reset_btn"
-            android:layout_width = "wrap_content"
-      	    android:layout_height = "fill_parent"
+            android:layout_width = "200dip"
+            android:layout_height = "fill_parent"
       	    android:contentDescription="@string/reset"
       	    android:src="@drawable/reset"
       	 />
