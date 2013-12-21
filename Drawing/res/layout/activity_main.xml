@@ -8,44 +8,23 @@
 	<!-- Buttons -->
     <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:orientation="horizontal">
-        <Button 
-      	    android:id = "@+id/new_pattern_button"
-      	    android:layout_width = "wrap_content"
-      	    android:layout_height = "fill_parent"
-      	    android:text="@string/new_pattern" />
         <ImageButton 
-            android:id="@+id/new_btn"
+            android:id="@+id/new_pattern_button"
             android:layout_width = "wrap_content"
             android:layout_height = "fill_parent"
-            android:contentDescription="@string/start_new"
-            android:src="@drawable/new_pic"/>
-        <ImageButton
-		    android:id="@+id/draw_btn"
-		    android:layout_width="wrap_content"
-		    android:layout_height="fill_parent"
-		    android:contentDescription="@string/brush"
-		    android:src="@drawable/brush" />
-      	<ImageButton
-      	    android:id = "@+id/erase_btn"
-      	    android:layout_width = "wrap_content"
-      	    android:layout_height = "fill_parent"
-      	    android:contentDescription="@string/erase"
-      	    android:src = "@drawable/eraser" />
-      	<ImageButton
-      	    android:id = "@+id/save_btn"
-      	    android:layout_width = "wrap_content"
-      	    android:layout_height = "fill_parent"
-      	    android:contentDescription="@string/save"
-      	    android:src="@drawable/save"/>
-      	<Button 
+            android:contentDescription="@string/new_pattern"
+            android:src="@drawable/newpattern"/>
+      	<ImageButton 
       	    android:id = "@+id/reset_btn"
-      	    android:layout_width = "wrap_content"
+            android:layout_width = "wrap_content"
       	    android:layout_height = "fill_parent"
-      	    android:text="@string/reset"
+      	    android:contentDescription="@string/reset"
+      	    android:src="@drawable/reset"
       	 />
+      	      	    
    </LinearLayout>
    <!-- Drawing area -->
    
@@ -85,11 +64,11 @@
 			    android:layout_width="@dimen/large_brush"
 			    android:layout_height="@dimen/large_brush"
 			    android:layout_margin="2dp"
-			    android:background="#FF660000"
+			    android:background="#FFFFCC00" 
 			    android:contentDescription="@string/paint"
 			    android:onClick="paintClicked"
 			    android:src="@drawable/paint"
-			    android:tag="#FF660000" />
+			    android:tag="#FFFFCC00" />
 			<ImageButton
 			    android:layout_width="@dimen/large_brush"
 			    android:layout_height="@dimen/large_brush"
@@ -112,11 +91,11 @@
 			    android:layout_width="@dimen/large_brush"
 			    android:layout_height="@dimen/large_brush"
 			    android:layout_margin="2dp"
-			    android:background="#FFFFCC00"
+			    android:background="#FF660000"
 			    android:contentDescription="@string/paint"
 			    android:onClick="paintClicked"
 			    android:src="@drawable/paint"
-			    android:tag="#FFFFCC00" />
+			    android:tag="#FF660000" />
 			<ImageButton
 			    android:layout_width="@dimen/large_brush"
 			    android:layout_height="@dimen/large_brush"
